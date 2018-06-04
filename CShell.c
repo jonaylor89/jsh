@@ -101,7 +101,7 @@ char *read_line(void)
             bufsize += RL_BUFSIZE; 
             buffer = realloc(buffer, bufsize);
             if (!buffer) {
-                fprintf(stderr, "Shell: allocationj error\n");
+                fprintf(stderr, "Shell: allocation error\n");
                 exit(EXIT_FAILURE);
             }
         }
