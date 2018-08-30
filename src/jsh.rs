@@ -3,7 +3,7 @@ use std::io;
 use std::vec::Vec;
 use std::path::Path;
 use std::env::set_current_dir;
-use nix::sys::signal::*;
+use std::ffi::CString;
 use nix::sys::wait;
 use nix::unistd::*;
 
@@ -19,7 +19,7 @@ static builtin_func: &'static [fn(Vec<&str>) -> i32; 3] = &[
     sh_exit,
 ];
 
-fn num_builtins() -> i32 {
+fn num_builtins() -> usize {
     return builtin_str.len();
 }
 
@@ -30,7 +30,7 @@ fn num_builtins() -> i32 {
 fn sh_cd(argv: Vec<&str>) -> i32 {
     let path = Path::new(argv[1]);
 
-    if !path.exists {
+    if !path.exists() {
         println!("Error");
     } else {
         if set_current_dir(&path).is_err(){
@@ -41,7 +41,7 @@ fn sh_cd(argv: Vec<&str>) -> i32 {
     return 1;
 }
 
-fn sh_help(argv: Vec<&str>) -> i32 {
+fn sh_help(_argv: Vec<&str>) -> i32 {
     println!("John Naylor");
     println!("Shell heavily influenced by Stephen Brennan's LSH");
     println!("The following are builtin:");
@@ -55,7 +55,7 @@ fn sh_help(argv: Vec<&str>) -> i32 {
     return 1;
 }
 
-fn sh_exit(argv: Vec<&str>) -> i32 {
+fn sh_exit(_argv: Vec<&str>) -> i32 {
     return 0;
 }
 
@@ -70,13 +70,31 @@ fn split_line(line: &str) -> Vec<&str> {
                        c == '\n').collect();
 }
 
+fn vec_to_c_slice(arr: Vec<&str>) -> &[CString] {
+
+    let mut C_arr = Vec::new();
+
+    for v in arr {
+        C_arr.push(CString::new(v).unwrap());
+    }
+
+    return C_arr.as_slice();
+
+}
+
 fn launch(argv: Vec<&str>) -> i32 {
+
+    let command_C = &CString::new(argv[0]).unwrap();
+    let arg_C = vec_to_c_slice(argv);
+
     match fork().expect("fork failed") {
         ForkResult::Parent{ child } => {
-            let wpid = wait::waitpid(child);
+            loop {
+                let status = wait::waitpid(child, None);
+            }
         }
         ForkResult::Child => {
-            if execvp(argv[0], argv).is_err() {
+            if execvp(command_C, arg_C).is_err() {
                 println!("Execution error") ;
             }
 
@@ -104,15 +122,15 @@ fn execute(argv: Vec<&str>) -> i32 {
 
 pub fn shell_loop() {
 
-    let mut line = &String::new();
+    let mut line = String::new();
     let mut argv: Vec<&str>;
     let mut status: i32;
 
     loop {
     
         println!("> ");
-        line = io::Stdin().read_line().unwraps();
-        argv = split_line(line);
+        io::stdin().read_line(&mut line).unwrap();
+        argv = split_line(&line);
         status = execute(argv);
 
         if status == 0 {
