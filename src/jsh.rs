@@ -5,6 +5,8 @@ use std::path::Path;
 use std::env::set_current_dir;
 use std::process::Command;
 
+use std::io::Write;
+
 static builtin_str: &'static [&'static str; 3] = &[
     "cd",
     "help",
@@ -98,9 +100,12 @@ pub fn shell_loop() {
     loop {
     
         print!("[jsh]==>>> ");
+        io::stdout().flush();
+
+        line.clear();
         io::stdin().read_line(&mut line).expect("read error");
         let commands = line.clone();
-        let argv = commands.rsplit(|c| 
+        let argv = commands.trim().rsplit(|c| 
                            c == '\t' ||
                            c == '\r' ||
                            c == '\n').collect();
