@@ -1,7 +1,42 @@
 
 use std::io;
+use std::env::set_current_dir;
+use nix::syds::signal::*;
+use nix::unistd::*;
 
-fn sh_help(argv: Vec[str]) ->i32 {
+let builtin_str = [
+    "cd",
+    "help",
+    "exit",
+];
+
+let builtin_func = [
+    &sh_cd,
+    &sh_help,
+    &sh_exit,
+];
+
+fn num_builtins() -> i32 {
+    return builtin_str.len();
+}
+
+/*
+ * Shell builtin functions
+ */
+
+fn sh_cd(argv: Vec[str]) -> i32 {
+    if argv[1] == None {
+         
+    } else {
+        if chdir(argv[1]) != 0 {
+            println!("Could not change directory") ;
+        }
+    }
+
+    return 1;
+}
+
+fn sh_help(argv: Vec[str]) -> i32 {
     println!("John Naylor");
     println!("Shell heavily influenced by Stephen Brennan's LSH");
     println!("The following are builtin:");
@@ -28,7 +63,16 @@ fn split_line(line: str) -> Vec[str] {
 }
 
 fn launch(argv: Vec[str]) -> i32 {
+    match fork().expect("fork failed") {
+        ForkResult::Parent{ child } => {
+             
+        }
+        ForkResult::Child => {
+             
+        }
+    }
 
+    return 1;
 }
 
 fn execute(argv: Vec[str]) -> i32 {
@@ -63,10 +107,4 @@ fn shell_loop() {
             break;    
         }
     }
-}
-
-fn main() {
-
-    shell_shell();
-
 }
