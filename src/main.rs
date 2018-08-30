@@ -1,6 +1,6 @@
 
 extern crate nix;
-use jsh
+mod jsh;
 
 fn main() {
 
