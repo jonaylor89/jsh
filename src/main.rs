@@ -1,5 +1,4 @@
 
-extern crate nix;
 mod jsh;
 
 fn main() {

@@ -3,9 +3,7 @@ use std::io;
 use std::vec::Vec;
 use std::path::Path;
 use std::env::set_current_dir;
-use std::ffi::CString;
-use nix::sys::wait;
-use nix::unistd::*;
+use std::process::Command;
 
 static builtin_str: &'static [&'static str; 3] = &[
     "cd",
@@ -63,43 +61,15 @@ fn sh_exit(_argv: Vec<&str>) -> i32 {
  * jsh Parsing and Execution
  */
 
-fn split_line(line: &str) -> Vec<&str> {
-    return line.rsplit(|c| 
-                       c == '\t' ||
-                       c == '\r' ||
-                       c == '\n').collect();
-}
-
-fn vec_to_c_slice(arr: Vec<&str>) -> &[CString] {
-
-    let mut C_arr = Vec::new();
-
-    for v in arr {
-        C_arr.push(CString::new(v).unwrap());
-    }
-
-    return C_arr.as_slice();
-
-}
-
 fn launch(argv: Vec<&str>) -> i32 {
 
-    let command_C = &CString::new(argv[0]).unwrap();
-    let arg_C = vec_to_c_slice(argv);
+    let mut command = Command::new(argv[0]);
+    let primed_command = command.args(&argv[1..]);
 
-    match fork().expect("fork failed") {
-        ForkResult::Parent{ child } => {
-            loop {
-                let status = wait::waitpid(child, None);
-            }
-        }
-        ForkResult::Child => {
-            if execvp(command_C, arg_C).is_err() {
-                println!("Execution error") ;
-            }
-
-            return 1;
-        }
+    if let Ok(mut child) = primed_command.spawn() {
+        child.wait().expect("Command failed");
+    } else {
+        println!("Command not started");
     }
 
     return 1;
@@ -123,14 +93,17 @@ fn execute(argv: Vec<&str>) -> i32 {
 pub fn shell_loop() {
 
     let mut line = String::new();
-    let mut argv: Vec<&str>;
     let mut status: i32;
 
     loop {
     
-        println!("> ");
-        io::stdin().read_line(&mut line).unwrap();
-        argv = split_line(&line);
+        print!("[jsh]==>>> ");
+        io::stdin().read_line(&mut line).expect("read error");
+        let commands = line.clone();
+        let argv = commands.rsplit(|c| 
+                           c == '\t' ||
+                           c == '\r' ||
+                           c == '\n').collect();
         status = execute(argv);
 
         if status == 0 {
