@@ -80,7 +80,7 @@ fn launch(argv: Vec<&str>) -> i32 {
     if let Ok(mut child) = primed_command.spawn() {
         child.wait().expect("Command failed");
     } else {
-        println!("Failed to spawn child process");
+        println!("Command doesn't exist");
     }
 
     return 1;
@@ -113,6 +113,11 @@ pub fn shell_loop() {
 
         line.clear();
         io::stdin().read_line(&mut line).expect("read error");
+
+        if line.trim().is_empty() {
+            continue; 
+        }
+
         let commands = line.clone();
         let argv = commands.trim().split_whitespace().collect();
         status = execute(argv);
