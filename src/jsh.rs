@@ -1,7 +1,6 @@
 
 use std::io::{self, Write};
-use std::vec::Vec;
-use std::path::Path;
+use std::vec::Vec; use std::path::Path;
 use std::env::set_current_dir;
 use std::process::Command;
 
