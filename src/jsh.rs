@@ -5,6 +5,10 @@ use std::path::Path;
 use std::env::set_current_dir;
 use std::process::Command;
 
+/*
+ * Static constants
+ */
+
 static BUILTIN_STR: &'static [&'static str; 3] = &[
     "cd",
     "help",
@@ -112,14 +116,6 @@ pub fn shell_loop() {
         io::stdin().read_line(&mut line).expect("read error");
         let commands = line.clone();
         let argv = commands.trim().split_whitespace().collect();
-        /* let argv = commands.trim().rsplit(|c| 
-                            c == ' ' ||
-                           c == '\t' ||
-                           c == '\r' ||
-                           c == '\n').collect();
-
-        */
-
         status = execute(argv);
 
         if status == 0 {
