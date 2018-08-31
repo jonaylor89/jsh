@@ -2,7 +2,7 @@
 use std::io::{self, Write};
 use std::vec::Vec; use std::path::Path;
 use std::env::set_current_dir;
-use std::process::Command;
+use std::process::Command; 
 
 /*
  * Static constants
@@ -108,12 +108,13 @@ pub fn shell_loop() {
 
     loop {
     
-        print!("[jsh]==>>> ");
+        print!("[\x1b[31mImperatorJohannes\x1b[m] ~$ ");
         io::stdout().flush().ok().expect("error flushing buffer");
 
         line.clear();
         io::stdin().read_line(&mut line).expect("read error");
 
+        // Make sure line isn't empty
         if line.trim().is_empty() {
             continue; 
         }
