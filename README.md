@@ -1,2 +1,2 @@
 # C-Shell
-Unix shell written in C
+Unix shell written in Rust
