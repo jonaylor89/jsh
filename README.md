@@ -1,4 +1,4 @@
-# JSH The future of the terminal
+# JSH: The future of the terminal
 
 \*nix shell written entirely in rust
 
