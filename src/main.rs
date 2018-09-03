@@ -1,5 +1,8 @@
 
+extern crate termion;
+
 mod jsh;
+mod prompt;
 
 fn main() {
 

@@ -3,6 +3,7 @@ use std::io::{self, Write};
 use std::vec::Vec; use std::path::Path;
 use std::env::set_current_dir;
 use std::process::Command; 
+use prompt;
 
 /*
  * Static constants
@@ -108,7 +109,7 @@ pub fn shell_loop() {
 
     loop {
     
-        print!("[\x1b[31mImperatorJohannes\x1b[m] ~$ ");
+        print!("{} ", prompt::prompt());
         io::stdout().flush().ok().expect("error flushing buffer");
 
         line.clear();
