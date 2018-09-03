@@ -8,6 +8,6 @@
 - exit : Exit Shell
 
 ## TODO
-- Configuration of prompt
+- Configuration of prompt (In progress))
 - Shell plugins
 - Scripting language
