@@ -1,6 +1,6 @@
-# C-Shell
+# jsh
 
-Unix shell written in Rust
+\*nix shell written in Rust
 
 # Builtin Commands
 - cd   : Change Directory
