@@ -1,13 +1,13 @@
-# jsh
+# JSH <The future of the terminal>
 
-\*nix shell written in Rust
+\*nix shell written entirely in rust
 
-# Builtin Commands
+## Builtin Commands
 - cd   : Change Directory
 - help : Display Help Menu
 - exit : Exit Shell
 
-# TODO
+## TODO
 - Configuration of prompt
-- More builtins
+- Shell plugins
 - Scripting language
