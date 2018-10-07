@@ -1,8 +1,7 @@
-
 use std::io::{self, Write};
 use std::vec::Vec; use std::path::Path;
 use std::env::set_current_dir;
-use std::process::Command; 
+use std::process::Command;
 use prompt;
 
 /*
@@ -31,9 +30,9 @@ fn num_builtins() -> usize {
 
 fn jsh_cd(argv: Vec<&str>) -> i32 {
 
-    if !argv[1].is_empty() {
+    if argv.len() < 2 {
         println!("cd needs a directory");
-        return 1; 
+        return 1;
     }
 
     let path = Path::new(argv[1]);
@@ -89,8 +88,8 @@ fn launch(argv: Vec<&str>) -> i32 {
 
 fn execute(argv: Vec<&str>) -> i32 {
 
-    if argv[0].is_empty() {
-        return 1; 
+    if argv.len() < 1 {
+        return 1;
     }
 
     for i in 0..num_builtins() {
@@ -108,7 +107,7 @@ pub fn shell_loop() {
     let mut status: i32;
 
     loop {
-    
+
         print!("{} ", prompt::prompt());
         io::stdout().flush().ok().expect("error flushing buffer");
 
@@ -117,7 +116,7 @@ pub fn shell_loop() {
 
         // Make sure line isn't empty
         if line.trim().is_empty() {
-            continue; 
+            continue
         }
 
         let commands = line.clone();
@@ -125,7 +124,66 @@ pub fn shell_loop() {
         status = execute(argv);
 
         if status == 0 {
-            break;    
+            break
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn test_execute_none() {
+        use jsh::execute;
+
+        let args = vec![];
+
+        let result = execute(args);
+
+        assert_eq!(result, 1);
+    }
+
+    #[test]
+    fn test_execute_exit() {
+        use jsh::execute;
+
+        let args = vec!["exit"];
+
+        let result = execute(args);
+
+        assert_eq!(result, 0);
+    }
+
+    #[test]
+    fn test_execute_cd() {
+        use jsh::execute;
+
+        let args = vec!["cd", "test"];
+
+        let result = execute(args);
+
+        assert_eq!(result, 1);
+    }
+
+    #[test]
+    fn test_execute_cd_no_dir() {
+        use jsh::execute;
+
+        let args = vec!["cd"];
+
+        let result = execute(args);
+
+        assert_eq!(result, 1);
+    }
+
+    #[test]
+    fn test_execute_help() {
+        use jsh::execute;
+
+        let args = vec!["help"];
+
+        let result = execute(args);
+
+        assert_eq!(result, 1);
     }
 }
